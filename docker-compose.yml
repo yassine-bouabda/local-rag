@@ -10,7 +10,7 @@ services:
     restart: always
     environment:
       - PYTHONUNBUFFERED=1 # Ensures logs appear immediately
-    command: python -m uvicorn app.main:app --reload # Assuming you're using FastAPI or similar
+    command: python -m uvicorn main:app --reload # Assuming you're using FastAPI or similar
     # Alternatively, use flask or django commands if applicable
     # command: flask run --host=0.0.0.0
 

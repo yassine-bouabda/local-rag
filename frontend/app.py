@@ -27,12 +27,12 @@ if uploaded_file:
 
 # Sidebar: Fetch ArXiv Papers
 
-
 st.sidebar.header("Fetch AI Papers from ArXiv")
 arxiv_query = st.sidebar.text_input("Search ArXiv (e.g., 'GPT models')")
-if st.sidebar.button("Fetch Papers"):
+with st.sidebar:
     criteria = st.selectbox("Select sorting criteria:", list(SORT_CRITERIA.keys()))
     max_results = st.slider("Select the maximum number of results to fetch:", min_value=1, max_value=50, value=5)
+if st.sidebar.button("Fetch Papers"):
     if arxiv_query:
         response = requests.get(
             f"{API_URL}/fetch_arxiv",
