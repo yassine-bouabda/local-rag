@@ -4,7 +4,11 @@ import requests
 
 # Backend URL
 API_URL = "http://backend:8000"
-
+SORT_CRITERIA = {
+    "Relevance": "relevance",
+    "Last Updated Date": "lastUpdatedDate",
+    "Submitted Date": "submittedDate",
+}
 st.title("AI Research Assistant")
 
 # Sidebar: Upload PDF
@@ -22,11 +26,18 @@ if uploaded_file:
             st.error("Failed to upload PDF.")
 
 # Sidebar: Fetch ArXiv Papers
+
+
 st.sidebar.header("Fetch AI Papers from ArXiv")
 arxiv_query = st.sidebar.text_input("Search ArXiv (e.g., 'GPT models')")
 if st.sidebar.button("Fetch Papers"):
+    criteria = st.selectbox("Select sorting criteria:", list(SORT_CRITERIA.keys()))
+    max_results = st.slider("Select the maximum number of results to fetch:", min_value=1, max_value=50, value=5)
     if arxiv_query:
-        response = requests.get(f"{API_URL}/fetch_arxiv", params={"query": arxiv_query})
+        response = requests.get(
+            f"{API_URL}/fetch_arxiv",
+            params={"query": arxiv_query, "criteria": SORT_CRITERIA[criteria], "max_results": max_results},
+        )
         if response.status_code == 200:
             papers = response.json().get("papers", [])
             for paper in papers:
