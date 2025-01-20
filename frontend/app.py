@@ -1,14 +1,12 @@
 # ui/app.py
 import streamlit as st
 import requests
-
+from enums import SortCriterion
+import sys
+sys.path.append("/root_app")  # Add root directory to Python path
 # Backend URL
 API_URL = "http://backend:8000"
-SORT_CRITERIA = {
-    "Relevance": "relevance",
-    "Last Updated Date": "lastUpdatedDate",
-    "Submitted Date": "submittedDate",
-}
+
 st.title("AI Research Assistant")
 
 # Sidebar: Upload PDF
@@ -30,13 +28,16 @@ if uploaded_file:
 st.sidebar.header("Fetch AI Papers from ArXiv")
 arxiv_query = st.sidebar.text_input("Search ArXiv (e.g., 'GPT models')")
 with st.sidebar:
-    criteria = st.selectbox("Select sorting criteria:", list(SORT_CRITERIA.keys()))
+    criteria = st.sidebar.selectbox(
+        "Select sorting criteria:", list((SortCriterion))  # Display enum names
+    )
+    print("front end------------------------",criteria,type(criteria))
     max_results = st.slider("Select the maximum number of results to fetch:", min_value=1, max_value=50, value=5)
 if st.sidebar.button("Fetch Papers"):
     if arxiv_query:
         response = requests.get(
             f"{API_URL}/fetch_arxiv",
-            params={"query": arxiv_query, "criteria": SORT_CRITERIA[criteria], "max_results": max_results},
+            params={"query": arxiv_query, "criteria": criteria, "max_results": max_results},
         )
         if response.status_code == 200:
             papers = response.json().get("papers", [])

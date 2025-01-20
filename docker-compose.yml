@@ -6,13 +6,18 @@ services:
     ports:
       - "8000:8000"
     volumes:
+      - .:/root
       - ./backend:/app
+    working_dir: /app
     restart: always
     environment:
       - PYTHONUNBUFFERED=1 # Ensures logs appear immediately
-    command: python -m uvicorn main:app --reload # Assuming you're using FastAPI or similar
-    # Alternatively, use flask or django commands if applicable
-    # command: flask run --host=0.0.0.0
+      - PYTHONPATH=/root
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_HOST=ollama:11434
+      - WEBUI_SECRET_KEY=''
+    depends_on:
+      - ollama
 
   frontend:
     build:
@@ -23,5 +28,22 @@ services:
     depends_on:
       - backend
     volumes:
+      - .:/root
       - ./frontend:/app
+    working_dir: /app
     restart: always
+    environment:
+      - PYTHONUNBUFFERED=1 # Ensures logs appear immediately
+      - PYTHONPATH=/root
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama_service
+    ports:
+      - "11434:11434" # Default port for Ollama API
+    restart: always
+    volumes:
+      - ./ollama:/root/.ollama
+      - ./start-ollama.sh:/start-ollama.sh
+    entrypoint: ["/bin/sh", "/start-ollama.sh"]
+

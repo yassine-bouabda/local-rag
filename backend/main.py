@@ -1,10 +1,10 @@
 import arxiv
-from enum import Enum
-from fastapi import FastAPI, Form, UploadFile
+from fastapi import FastAPI, Form, UploadFile,Query
 from fastapi.middleware.cors import CORSMiddleware
 from langchain_community.document_loaders import PyPDFLoader
 from llm import (create_qa_chain, create_vectorstore, load_llm,
                  process_and_add_documents)
+from enums import SortCriterion
 
 # Initialize FastAPI
 app = FastAPI()
@@ -16,13 +16,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class SortCriterion(str, Enum):
-    Relevance=arxiv.SortCriterion.Relevance
-    LastUpdatedDate=arxiv.SortCriterion.LastUpdatedDate
-    SubmittedDate=arxiv.SortCriterion.SubmittedDate
-
 # Load LLM, Vector Store, and QA Chain
-llm = load_llm()
+llm=load_llm()
 vectorstore = create_vectorstore()
 qa_chain = create_qa_chain(
     llm,
@@ -34,8 +29,9 @@ qa_chain = create_qa_chain(
 # Helper: Fetch Most relevant AI papers from ArXiv
 @app.get("/fetch_arxiv")
 async def fetch_arxiv_papers(
-    query: str = "artificial intelligence", criteria=SortCriterion.Relevance, max_results: int = 5
+    query: str, criteria:str, max_results: int = 5
 ):
+    criteria = SortCriterion[criteria]
     search = arxiv.Search(
         query=query,
         max_results=max_results,
@@ -66,5 +62,5 @@ async def upload_pdf(file: UploadFile):
 # Endpoint: Query the assistant
 @app.post("/query")
 async def query_research_assistant(question: str = Form(...)):
-    response = qa_chain.invoke({"question": question})
+    response = qa_chain.invoke(question)
     return {"response": response}

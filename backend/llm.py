@@ -6,11 +6,12 @@ import os
 from dotenv import load_dotenv
 from langchain_community.vectorstores import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_openai.chat_models import ChatOpenAI
-from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain import hub 
+from langchain_ollama import OllamaLLM
+
+from langchain_ollama import OllamaEmbeddings
 
 
 
@@ -26,12 +27,13 @@ if not openai.api_key:
 
 
 # Initialize OpenAI LLM
-def load_llm(model_name: str = "gpt-3.5-turbo",temperature=0.3):
-    return ChatOpenAI(model_name=model_name, temperature=temperature)
+def load_llm(model_name: str = "phi3",temperature=0.3):
+    return OllamaLLM(model=model_name, temperature=temperature)
 
 # Initialize Vector Store
 def create_vectorstore(persist_directory: str = "chroma_db"):
-    embeddings = OpenAIEmbeddings()
+    embeddings = OllamaEmbeddings(
+    model="phi3")
     return Chroma(persist_directory=persist_directory, embedding_function=embeddings)
 
 # Helper function to format documents
