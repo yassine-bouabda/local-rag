@@ -6,13 +6,13 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/root
       - ./backend:/app
     working_dir: /app
     restart: always
     environment:
       - PYTHONUNBUFFERED=1 # Ensures logs appear immediately
       - PYTHONPATH=/root
+      - FRONT_URL=http://backend:8501
       - OLLAMA_BASE_URL=http://ollama:11434
       - OLLAMA_HOST=ollama:11434
       - WEBUI_SECRET_KEY=''
@@ -28,13 +28,13 @@ services:
     depends_on:
       - backend
     volumes:
-      - .:/root
       - ./frontend:/app
     working_dir: /app
     restart: always
     environment:
       - PYTHONUNBUFFERED=1 # Ensures logs appear immediately
       - PYTHONPATH=/root
+      - BACKEND_URL=http://backend:8000
 
   ollama:
     image: ollama/ollama

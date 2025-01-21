@@ -1,0 +1,31 @@
+[project]
+name = "research-assistant-rag-project"
+version = "0.1.0"
+description = "A research assistant using LangChain,Ollama and Streamlit."
+authors = [
+    {name = "Yassine Bouabdallaoui", email = "bouabda.yassin@gmail.com"}
+]
+license = "MIT"
+keywords = ["RAG", "llm", "langchain", "ollama"]
+readme = "README.md"
+requires-python = ">=3.10"
+
+[tool.black]
+include= "*.py"
+target-version = ["py310"]
+skip-string-normalization = true
+
+[tool.isort]
+profile = "black"
+include= "*.py"
+known_third_party = ["langchain", "chromadb", "fastapi", "streamlit"]
+skip_gitignore = true
+
+[tool.mypy]
+python_version = "3.10"
+include= "*.py"
+warn_unused_ignores = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+strict = true
+

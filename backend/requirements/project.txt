@@ -12,3 +12,4 @@ python-dotenv
 langchain-community
 langchain-chroma
 python-multipart
+pypdf

@@ -5,9 +5,9 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Copy requirements and install dependencies
-COPY requirements.txt .
-RUN pip install  -r requirements.txt
-
+COPY requirements/  requirements/
+RUN pip install --no-cache-dir -r requirements/project.txt
+RUN pip install --no-cache-dir -r requirements/dev.txt
 # Copy the FastAPI application
 COPY . .
 

@@ -1,12 +1,15 @@
 # ui/app.py
-import streamlit as st
-import requests
-from enums import SortCriterion
+import os
 import sys
+
+import arxiv
+import requests
+import streamlit as st
+
 sys.path.append("/root_app")  # Add root directory to Python path
 # Backend URL
-API_URL = "http://backend:8000"
 
+api_url = os.getenv("BACKEND_URL")
 st.title("AI Research Assistant")
 
 # Sidebar: Upload PDF
@@ -17,7 +20,7 @@ if uploaded_file:
     with st.sidebar:
         st.write("Processing...")
         files = {"file": uploaded_file}
-        response = requests.post(f"{API_URL}/upload_pdf", files=files)
+        response = requests.post(f"{api_url}/upload_pdf", files=files)
         if response.status_code == 200:
             st.success("PDF uploaded and processed successfully!")
         else:
@@ -29,15 +32,24 @@ st.sidebar.header("Fetch AI Papers from ArXiv")
 arxiv_query = st.sidebar.text_input("Search ArXiv (e.g., 'GPT models')")
 with st.sidebar:
     criteria = st.sidebar.selectbox(
-        "Select sorting criteria:", list((SortCriterion))  # Display enum names
+        "Select sorting criteria:",
+        list(criterion.value.capitalize() for criterion in arxiv.SortCriterion),
+    )  # Display enum names
+    max_results = st.slider(
+        "Select the maximum number of results to fetch:",
+        min_value=1,
+        max_value=50,
+        value=5,
     )
-    print("front end------------------------",criteria,type(criteria))
-    max_results = st.slider("Select the maximum number of results to fetch:", min_value=1, max_value=50, value=5)
 if st.sidebar.button("Fetch Papers"):
     if arxiv_query:
         response = requests.get(
-            f"{API_URL}/fetch_arxiv",
-            params={"query": arxiv_query, "criteria": criteria, "max_results": max_results},
+            f"{api_url}/fetch_arxiv",
+            params={
+                "query": arxiv_query,
+                "criteria": criteria,
+                "max_results": max_results,
+            },
         )
         if response.status_code == 200:
             papers = response.json().get("papers", [])
@@ -53,7 +65,7 @@ st.header("Ask the Research Assistant")
 query = st.text_input("Enter your question:")
 if st.button("Ask"):
     if query:
-        response = requests.post(f"{API_URL}/query", data={"question": query})
+        response = requests.post(f"{api_url}/query", data={"question": query})
         if response.status_code == 200:
             answer = response.json().get("response", "No response.")
             st.write("### Assistant's Answer")
