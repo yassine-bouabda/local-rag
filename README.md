@@ -13,7 +13,7 @@ A simple **RAG** system to chat with your arXiv papers locally, without any API 
 
 ### Getting Started  
 Run the command `docker-compose up --build` to build and start the services.  
-![UI Screenshot](docs/images/screenshot.png)  
+![UI Screenshot](docs/images/screenshot_ui.png)  
 
 #### Customization  
 - I used `'phi3:mini'`; feel free to use any other model from [Ollama](https://ollama.com/library).  
